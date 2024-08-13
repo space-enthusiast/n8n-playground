@@ -1,0 +1,192 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "6acd3817-0e2d-4728-bf6e-9e0faccf3a22",
+      "name": "When clicking ‘Test workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "position": [
+        840,
+        460
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                1
+              ],
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "id": "07cb40ba-004c-46da-b361-22ac297987a2",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        840,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "donkiSolarFlare",
+        "additionalFields": {
+          "startDate": "={{$today.minus({days: 7}).toFormat('yyyy-MM-dd')}}"
+        }
+      },
+      "id": "dd07934d-97d5-43f3-9756-3a184f585aa2",
+      "name": "NASA",
+      "type": "n8n-nodes-base.nasa",
+      "typeVersion": 1,
+      "position": [
+        1060,
+        320
+      ],
+      "credentials": {
+        "nasaApi": {
+          "id": "atIlGI3XGgouNkHy",
+          "name": "NASA account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "fc978644-0a11-4a9d-b053-9daba8215fa0",
+              "leftValue": "={{ $json.classType }}",
+              "rightValue": "X",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "1ff97b00-9b45-475d-b3e5-8fe5bbfcbd6a",
+      "name": "If",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1280,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "request",
+        "operation": "send",
+        "binId": "1723523770680-2827795080374",
+        "binContent": "=There was a solar flare of class {{$json[\"classType\"]}}",
+        "requestOptions": {}
+      },
+      "id": "8103c959-820c-41d2-aff6-89cfcbcc6e52",
+      "name": "PostBin",
+      "type": "n8n-nodes-base.postBin",
+      "typeVersion": 1,
+      "position": [
+        1520,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "request",
+        "operation": "send",
+        "binId": "1723523770680-2827795080374",
+        "binContent": "=There was a solar flare of class {{$json[\"classType\"]}}",
+        "requestOptions": {}
+      },
+      "id": "6b2e4176-55c2-494a-8918-570a8903d04d",
+      "name": "PostBin1",
+      "type": "n8n-nodes-base.postBin",
+      "typeVersion": 1,
+      "position": [
+        1520,
+        400
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "NASA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "NASA": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "PostBin",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "PostBin1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "NASA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "735c23ae-bf74-432f-945c-a994de068b1e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ee78a34595f237d6416d7ce0a9fb3f98fe2e82a4c2f1a53941a09774e6808a59"
+  },
+  "id": "3tpMfpnAaPE5Mc1q",
+  "tags": []
+}
